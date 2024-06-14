@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Admin;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\ApiToken;
@@ -46,9 +47,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
-
-        $user = User::authenticate($request->email, $request->password);
+       $user = User::authenticate($request->email, $request->password);
 
         if (!$user) {
             return response()->json(['error' => 'Invalid credentials'], 401);
@@ -59,6 +58,21 @@ class AuthController extends Controller
         $apiToken = ApiToken::createTokenForUser($user, $ipAddress,$expiresIn);
 
         return response()->json(['token' => $apiToken->token,$user]);
+    }
+
+    public function adminLogin(Request $request)
+    {
+       $admin = Admin::authenticate($request->email, $request->password);
+
+        if (!$admin) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        $ipAddress = $request->ip();
+        $expiresIn = $request->has('remember') ? 24 * 7 : 1;
+        $apiToken = ApiToken::createTokenForAdmin($admin, $ipAddress,$expiresIn);
+
+        return response()->json(['token' => $apiToken->token,$admin]);
     }
 
     public function logout(Request $request)
