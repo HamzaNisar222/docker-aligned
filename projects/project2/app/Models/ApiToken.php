@@ -13,12 +13,12 @@ class ApiToken extends Model
         'user_id', 'token', 'ip_address', 'expires_at',
     ];
 
-    public function user()
+    public function tokenable()
     {
-        return $this->belongsTo(User::class);
+        return $this->morphTo();
     }
 
-    public static function createTokenForUser($user, $ipAddress, $expiresIn = 1)
+    public static function createToken($user, $ipAddress, $expiresIn = 1)
     {
         $token = Str::random(80);
 

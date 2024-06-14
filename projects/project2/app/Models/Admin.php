@@ -24,22 +24,22 @@ class Admin extends Model
     ];
 
     public static function authenticate($email,$password){
-        $user = static::where('email', $email)->first();
+        $admin = static::where('email', $email)->first();
 
-        if (!$user) {
+        if (!$admin) {
             return null; // User not found
         }
 
-        if (!$user->status) {
+        if (!$admin->status) {
             echo "Email not verified";
             return null; // Account not active
         }
 
-        if (!Hash::check($password, $user->password)) {
+        if (!Hash::check($password, $admin->password)) {
             return null; // Incorrect password
         }
 
-        return $user;
+        return $admin;
     }
 
 }
