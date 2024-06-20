@@ -19,7 +19,7 @@ class CheckRole
     {
         $user=$request->user;
 
-
+        // dd($user);
         if ($user->role !== $role) {
             return response()->json(['message' => 'Unauthorized role'], 401);
         }
