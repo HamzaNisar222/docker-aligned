@@ -51,6 +51,13 @@ return [
     */
 
     'channels' => [
+
+        'mongodb' => [
+            'driver' => 'custom',
+            'via' => App\Logging\MongoDBLogger::class,
+            'level' => 'info',
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],

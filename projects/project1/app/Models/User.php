@@ -17,6 +17,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // protected $database = ['LOG_COLLECTION'];
+    // protected $table = ['LOG_COLLECTION'];
     /**
      * The attributes that are mass assignable.
      *
