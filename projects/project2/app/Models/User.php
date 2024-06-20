@@ -54,7 +54,7 @@ class User extends Authenticatable
 
     public function apiTokens()
     {
-        return $this->hasMany(ApiToken::class);
+        return $this->morphMany(ApiToken::class, 'tokenable');
     }
 
     public function vendorService()

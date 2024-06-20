@@ -10,20 +10,20 @@ class ApiToken extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'token', 'ip_address', 'expires_at',
+        'user_id', 'token', 'ip_address', 'expires_at','tokenable_id', 'tokenable_type',
     ];
 
     public function tokenable()
     {
         return $this->morphTo();
     }
-
-    public static function createToken($user, $ipAddress, $expiresIn = 1)
+    public static function createToken($tokenable, $ipAddress, $expiresIn = 1)
     {
         $token = Str::random(80);
 
         $apiToken = self::create([
-            'user_id' => $user->id,
+            'tokenable_id' => $tokenable->id,
+            'tokenable_type' => get_class($tokenable),
             'token' => $token,
             'ip_address' => $ipAddress,
             'expires_at' => now()->addHours($expiresIn),

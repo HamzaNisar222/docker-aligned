@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Requests\subadminRequest;
 use Closure;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
@@ -24,6 +25,10 @@ class ValidationMiddleware
         }
         if($key === 'login'){
             app(LoginRequest::class);
+        }
+
+        if($key === 'subadmin'){
+            app(subadminRequest::class);
         }
 
         return $next($request);

@@ -19,10 +19,11 @@ class AuthCheckMiddleware
     public function handle(Request $request, Closure $next)
     {
         $authorizationHeader = $request->header('Authorization');
-        // dd($authorizationHeader);
+
         if (!$authorizationHeader) {
             return response()->json(['error' => 'Unauthorized token'], 401);
         }
+
         // Remove "Bearer " prefix
         $token = substr($authorizationHeader, 7);
 
@@ -34,8 +35,10 @@ class AuthCheckMiddleware
             return response()->json(['error' => 'Unauthorized user'], 401);
         }
 
-        // Attach authenticated user to the request
-        $request->merge(['user' => $apiToken->user]);
+        // Attach authenticated user/admin to the request
+        $tokenable = $apiToken->tokenable;
+        // dd($tokenable);
+        $request->merge(['user' => $tokenable]);
 
         return $next($request);
 

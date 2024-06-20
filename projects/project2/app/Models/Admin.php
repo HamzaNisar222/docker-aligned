@@ -12,7 +12,7 @@ class Admin extends Model
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role',
+        'name', 'email', 'password', 'role', 'permissions', 'status',
     ];
 
     protected $hidden = [
@@ -22,6 +22,20 @@ class Admin extends Model
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function hasAnyPermission($permissions)
+    {
+        if (is_array($permissions)) {
+            return collect($permissions)->intersect($this->permissions)->isNotEmpty();
+        }
+
+        return $this->permissions && in_array($permissions, $this->permissions);
+    }
+    
+    public function apiTokens()
+    {
+        return $this->morphMany(ApiToken::class, 'tokenable');
+    }
 
     public static function authenticate($email,$password){
         $admin = static::where('email', $email)->first();

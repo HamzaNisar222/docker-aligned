@@ -35,7 +35,9 @@ class SubServicesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(ServiceRequest $request, $serviceId)
+
     {
+        // dd($request->all());
         $service = Service::find($serviceId);
         if(!$service) {
             return response()->json(['message' => 'Service not found'], 404);

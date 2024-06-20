@@ -17,11 +17,13 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, $role)
     {
+
         $user=$request->user;
-
-
+        // dd($role);
+        // dd($user);
+        // dd($user->role);
         if ($user->role !== $role) {
-            return response()->json(['message' => 'Unauthorized role'], 401);
+            return response()->json(['message' => 'Unauthorized role Middle'], 401);
         }
 
         return $next($request);

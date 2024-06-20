@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('api_tokens', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->morphs('tokenable'); // This will create tokenable_id and tokenable_type columns
             $table->string('token', 80)->unique();
-            $table->ipAddress('ip_address'); // IP address of the device
-            $table->timestamp('expires_at')->nullable();
+            $table->string('ip_address')->nullable();
+            $table->timestamp('expires_at');
             $table->timestamps();
         });
     }

@@ -47,32 +47,32 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-       $user = User::authenticate($request->email, $request->password);
-
+        $user = User::authenticate($request->email, $request->password);
+        // dd($request->user);
         if (!$user) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
         $ipAddress = $request->ip();
         $expiresIn = $request->has('remember') ? 24 * 7 : 1;
-        $apiToken = ApiToken::createTokenForUser($user, $ipAddress,$expiresIn);
+        $apiToken = ApiToken::createToken($user, $ipAddress, $expiresIn);
 
-        return response()->json(['token' => $apiToken->token,$user]);
+        return response()->json(['token' => $apiToken->token, 'user' => $user]);
     }
 
     public function adminLogin(Request $request)
     {
-       $admin = Admin::authenticate($request->email, $request->password);
-
+        $admin = Admin::authenticate($request->email, $request->password);
+    
         if (!$admin) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
         $ipAddress = $request->ip();
         $expiresIn = $request->has('remember') ? 24 * 7 : 1;
-        $apiToken = ApiToken::createTokenForAdmin($admin, $ipAddress,$expiresIn);
+        $apiToken = ApiToken::createToken($admin, $ipAddress, $expiresIn);
 
-        return response()->json(['token' => $apiToken->token,$admin]);
+        return response()->json(['token' => $apiToken->token, 'admin' => $admin]);
     }
 
     public function logout(Request $request)

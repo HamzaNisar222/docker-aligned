@@ -17,10 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('subadmin'); // 'admin' or 'sub-admin'
-            $table->boolean('status')->default(1);
+            $table->enum('role', ['admin', 'subadmin'])->default('subadmin');
+            $table->json('permissions')->nullable(); // Nullable for subadmins
+            $table->boolean('status')->default(true); // Active by default
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
