@@ -27,10 +27,10 @@ class AdminController extends Controller
     public function deleteSubAdmin($id)
     {
         $subAdmin = Admin::findOrFail($id);
-        if($subAdmin->role == 'subadmin') {
+        if ($subAdmin->role == 'subadmin') {
             $subAdmin->delete();
-        }else{
-              return Response::error('cant delete ADMIN',403);
+        } else {
+            return Response::error('cant delete ADMIN', 403);
         }
 
         return response()->json(['message' => 'Subadmin deleted successfully'], 200);
@@ -39,8 +39,8 @@ class AdminController extends Controller
     public function activateSubAdmin($id)
     {
         $subAdmin = Admin::findOrFail($id);
-        if($subAdmin->status == true) {
-                return Response::error('SubAdmin Already Active',400);
+        if ($subAdmin->status == true) {
+            return Response::error('SubAdmin Already Active', 400);
         }
         $subAdmin->status = true;
         $subAdmin->save();
@@ -51,12 +51,12 @@ class AdminController extends Controller
     public function deactivateSubAdmin($id)
     {
         $subAdmin = Admin::findOrFail($id);
-        if($subAdmin->status == true) {
+        if ($subAdmin->status == true) {
             $subAdmin->status = false;
             $subAdmin->save();
 
-        }else{
-            return Response::error('Admin Already Inactive',400);
+        } else {
+            return Response::error('Admin Already Inactive', 400);
         }
 
         return response()->json(['message' => 'Subadmin deactivated successfully'], 200);
@@ -75,13 +75,6 @@ class AdminController extends Controller
         return response()->json(['message' => 'Permissions assigned successfully', 'admin' => $admin], 200);
     }
 
-    public function createUser(Request $request)
-    {
-        $user = User::createUser($request->all());
-        // JOB FOR SENDING MAIL(Pending)
-        return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
-    }      
-
     public function deleteUser($id)
     {
         $user = User::findOrFail($id);
@@ -93,6 +86,9 @@ class AdminController extends Controller
     public function activateUser($id)
     {
         $user = User::findOrFail($id);
+        if ($user->status == true) {
+            return Response::error('User already activated', 401);
+        }
         $user->status = true;
         $user->save();
 
@@ -102,9 +98,13 @@ class AdminController extends Controller
     public function deactivateUser($id)
     {
         $user = User::findOrFail($id);
-        $user->status = false;
-        $user->save();
+        if ($user->status == true) {
+            $user->status = false;
+            $user->save();
+            return response()->json(['message' => 'User deactivated successfully'], 200);
+        }
+        return Response::error('user already deactivated', 401);
 
-        return response()->json(['message' => 'User deactivated successfully'], 200);
+
     }
 }

@@ -14,6 +14,6 @@ Route::post('/logout', [AuthController::class, 'logout']);
 //ADMIN LOGIN
 Route::prefix('admin')->group(function () {
 
-    Route::post('/login',[AuthController::class,'adminLogin'])->name('admin.login');
-    
+    Route::post('/login',[AuthController::class,'adminLogin'])->middleware('validation:login')->name('admin.login');
+
 });

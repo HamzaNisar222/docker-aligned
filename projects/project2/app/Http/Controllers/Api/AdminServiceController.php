@@ -72,4 +72,14 @@ class AdminServiceController extends Controller
 
         return response()->json(['registrations' => $registrations], 200);
     }
+
+
+    public function userRejected($userId)
+    {
+        $registrations = VendorServiceRegistration::where('vendor_id', $userId)
+            ->where('status', 'rejected')
+            ->get();
+
+        return response()->json(['registrations' => $registrations], 200);
+    }
 }

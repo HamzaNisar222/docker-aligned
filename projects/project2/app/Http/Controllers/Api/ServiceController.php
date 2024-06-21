@@ -4,15 +4,13 @@ namespace App\Http\Controllers\api;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ServiceRequest;
 use App\Http\Resources\ServiceResource;
 use App\Http\Resources\ServiceCollection;
-use App\Http\Requests\ServiceRequestUpdate;
 
 class ServiceController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource
      *
      * @return \Illuminate\Http\Response
      */
@@ -25,12 +23,12 @@ class ServiceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\ServiceRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ServiceRequest $request)
+    public function store(Request $request)
     {
-        $service = Service::create($request->validated());
+        $service = Service::create($request->all());
         return new ServiceResource($service);
     }
 
@@ -52,18 +50,18 @@ class ServiceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\ServiceRequestUpdate  $request
+     * @param  \Illuminate\Http\Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ServiceRequestUpdate $request, $id)
+    public function update(Request $request, $id)
     {
         $service = Service::find($id);
         if (!$service) {
             return response()->json(['message' => 'Service not found'], 404);
         }
 
-        $service->update($request->validated());
+        $service->update($request->all());
         return new ServiceResource($service);
     }
 

@@ -6,9 +6,7 @@ use App\Models\Service;
 use App\Models\Subservice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ServiceRequest;
 use App\Http\Resources\SubServiceResource;
-use App\Http\Requests\ServiceRequestUpdate;
 use App\Http\Resources\SubServiceCollection;
 
 class SubServicesController extends Controller
@@ -34,7 +32,7 @@ class SubServicesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ServiceRequest $request, $serviceId)
+    public function store(Request $request, $serviceId)
 
     {
         // dd($request->all());
@@ -64,7 +62,7 @@ class SubServicesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ServiceRequestUpdate $request, $id)
+    public function update(Request $request, $id)
     {
         $subService = Subservice::find($id);
 

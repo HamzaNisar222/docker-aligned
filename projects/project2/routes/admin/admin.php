@@ -2,6 +2,7 @@
 // routes/api.php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\SubServicesController;
@@ -19,19 +20,19 @@ Route::middleware(['auth.token', 'role:admin'])->prefix('admin')->group(function
     Route::post('/assign-permissions/{id}', [AdminController::class, 'assignPermissions']);
 
     // Manage users
-    Route::post('/create-user', [AdminController::class, 'createUser'])->middleware('validation:register');
+    Route::post('/create-user', [AuthController::class, 'register'])->middleware('validation:register');
     Route::delete('/delete-user/{id}', [AdminController::class, 'deleteUser']);
     Route::post('/activate-user/{id}', [AdminController::class, 'activateUser']);
     Route::post('/deactivate-user/{id}', [AdminController::class, 'deactivateUser']);
 
     // Main Service routes
-    Route::post('/services', [ServiceController::class, 'store']);
-    Route::put('/services/{id}', [ServiceController::class, 'update']);
+    Route::post('/services', [ServiceController::class, 'store'])->middleware('validation:service');
+    Route::put('/services/{id}', [ServiceController::class, 'update'])->middleware('validation:service');
     Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
 
     // Sub Service routes
-    Route::post('/sub-services/{serviceId}', [SubServicesController::class, 'store']);
-    Route::put('/sub-services/{id}', [SubServicesController::class, 'update']);
+    Route::post('/sub-services/{serviceId}', [SubServicesController::class, 'store'])->middleware('validation:subservice');
+    Route::put('/sub-services/{id}', [SubServicesController::class, 'update'])->middleware('validation:subservice');
     Route::delete('/sub-services/{id}', [SubServicesController::class, 'destroy']);
 
     // Approve/reject service registrations
@@ -48,29 +49,3 @@ Route::middleware(['auth.token', 'role:admin'])->prefix('admin')->group(function
     Route::get('/users/{userId}/service-registrations/approved', [AdminServiceController::class, 'userApproved']);
 });
 
-Route::middleware(['auth.token', 'role:subadmin'])->prefix('subadmin')->group(function () {
-    // Subadmins have restricted permissions
-
-
-    // Manage users (subset of user management)
-    Route::middleware('check.permissions:manage_users')->group(function () {
-        Route::post('/create-user', [AdminController::class, 'createUser']);
-        Route::delete('/delete-user/{id}', [AdminController::class, 'deleteUser']);
-        Route::post('/activate-user/{id}', [AdminController::class, 'activateUser']);
-        Route::post('/deactivate-user/{id}', [AdminController::class, 'deactivateUser']);
-    });
-
-    // // Sub Service routes (subset of service management)
-    Route::middleware('check.permissions:manage_services')->group(function () {
-
-
-        // Main Service routes
-        Route::post('/services', [ServiceController::class, 'store']);
-        Route::put('/services/{id}', [ServiceController::class, 'update']);
-        Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
-        // Sub services routes
-        Route::post('/sub-services/{serviceId}', [SubServicesController::class, 'store']);
-        Route::put('/sub-services/{id}', [SubServicesController::class, 'update']);
-        Route::delete('/sub-services/{id}', [SubServicesController::class, 'destroy']);
-    });
-});
