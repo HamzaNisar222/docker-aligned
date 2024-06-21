@@ -22,6 +22,7 @@ return new class extends Migration
             $table->json('permissions')->nullable(); // Nullable for subadmins
             $table->boolean('status')->default(true); // Active by default
             $table->timestamp('email_verified_at')->nullable();
+            $table->softDeletes(); // Add soft deletes
             $table->rememberToken();
             $table->timestamps();
         });

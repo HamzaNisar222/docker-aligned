@@ -1,62 +1,62 @@
 <?php
 namespace App\Http\Controllers\Api;
 
-use App\Models\Admin;
 use App\Models\User;
+use App\Models\Admin;
+use App\Models\SubAdmin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 
 class AdminController extends Controller
 {
+    // Create Subadmin
     public function createSubAdmin(Request $request)
     {
-        $subAdmin = Admin::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'subadmin',
-            'permissions' => json_encode($request->permissions),
-            'status' => true,
-        ]);
-
+         $data=$request->all();
+        //  call add function from admin model
+         $subAdmin = Admin::addSubadmin($data);
         return response()->json(['message' => 'Subadmin created successfully', 'subadmin' => $subAdmin], 201);
     }
 
-    public function deleteSubAdmin($id)
+    // Archive Subadmin
+    public function archiveSubAdmin($id)
     {
-        $subAdmin = Admin::findOrFail($id);
-        if ($subAdmin->role == 'subadmin') {
-            $subAdmin->delete();
-        } else {
-            return Response::error('cant delete ADMIN', 403);
+        // Call to function in Admin Model
+        $subAdmin = SubAdmin::archive($id);
+        if(!$subAdmin){
+            return Response::error('Subadmin doesnot exist',404);
         }
+        return response()->json(['message' => 'Subadmin archived successfully'], 200);
+    }
 
-        return response()->json(['message' => 'Subadmin deleted successfully'], 200);
+
+    public function unarchiveSubAdmin($id)
+    {
+        // Call to unarchive function in Admin
+        $subadmin = SubAdmin::unarchive($id);
+        if(!$subadmin){
+            return Response::error('Subadmin does not exist',404);
+        }
+        return response()->json(['message' => 'Subadmin unarchived successfully'], 200);
     }
 
     public function activateSubAdmin($id)
     {
-        $subAdmin = Admin::findOrFail($id);
-        if ($subAdmin->status == true) {
-            return Response::error('SubAdmin Already Active', 400);
+        $subAdmin=SubAdmin::activate($id);
+        if(!$subAdmin){
+            return Response::error('subadmin not found',404);
         }
-        $subAdmin->status = true;
-        $subAdmin->save();
-
         return response()->json(['message' => 'Subadmin activated successfully'], 200);
     }
 
+    // deactivate subadmin
     public function deactivateSubAdmin($id)
     {
-        $subAdmin = Admin::findOrFail($id);
-        if ($subAdmin->status == true) {
-            $subAdmin->status = false;
-            $subAdmin->save();
-
-        } else {
-            return Response::error('Admin Already Inactive', 400);
+        // call to function from subadmin model
+        $subAdmin=SubAdmin::deactivate($id);
+        if(!$subAdmin){
+            return Response::error('SubAdmin not found',404);
         }
 
         return response()->json(['message' => 'Subadmin deactivated successfully'], 200);

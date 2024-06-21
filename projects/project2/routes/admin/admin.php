@@ -14,7 +14,8 @@ Route::middleware(['auth.token', 'role:admin'])->prefix('admin')->group(function
 
     // Manage subadmins
     Route::post('/create-subadmin', [AdminController::class, 'createSubAdmin'])->middleware('validation:subadmin');
-    Route::delete('/delete-subadmin/{id}', [AdminController::class, 'deleteSubAdmin']);
+    Route::delete('/archive-subadmin/{id}', [AdminController::class, 'archiveSubadmin']);
+    Route::post('/unarchive-subadmin/{id}', [AdminController::class, 'unarchiveSubAdmin']);
     Route::post('/activate-subadmin/{id}', [AdminController::class, 'activateSubAdmin']);
     Route::post('/deactivate-subadmin/{id}', [AdminController::class, 'deactivateSubAdmin']);
     Route::post('/assign-permissions/{id}', [AdminController::class, 'assignPermissions']);
@@ -39,13 +40,14 @@ Route::middleware(['auth.token', 'role:admin'])->prefix('admin')->group(function
     Route::post('/service-registrations/approve/{id}', [ServiceRegistrationController::class, 'approve']);
     Route::post('/service-registrations/reject/{id}', [ServiceRegistrationController::class, 'reject']);
 
+
     // Routes for service registrations
     Route::get('/service-registrations/pending', [AdminServiceController::class, 'pending']);
     Route::get('/service-registrations/approved', [AdminServiceController::class, 'approved']);
     Route::get('/service-registrations/rejected', [AdminServiceController::class, 'rejected']);
 
     // Routes for service registrations of a specific user
-    Route::get('/users/{userId}/service-registrations/pending', [AdminServiceController::class, 'userPending']);
-    Route::get('/users/{userId}/service-registrations/approved', [AdminServiceController::class, 'userApproved']);
+    Route::get('/rejected/{userId}', [AdminServiceController::class, 'userRejected']);
+    Route::get('/approved/{userId}', [AdminServiceController::class, 'userApproved']);
 });
 
