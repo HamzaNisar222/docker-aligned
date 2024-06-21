@@ -3,22 +3,12 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Exception;
-use MongoDB\Client;
+use App\Models\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class LogsRequestResponse
 {
-    protected $client;
-    protected $collection;
-
-    public function __construct() {
-        $this->client = new Client(env('MONGO_DB_CONNECTION'));
-        $this->collection = $this->client->selectCollection(env('MONGO_DB_DATABASE'), env('LOG_COLLECTION'));
-    }
-
     /**
      * Handle an incoming request.
      *
@@ -30,51 +20,58 @@ class LogsRequestResponse
     {
         $response = $next($request);
 
-        $this->logToMongoDB($request, $response);
+        $this->logToDatabase($request, $response);
 
         return $response;
     }
 
-    protected function logToMongoDB(Request $request, Response $response) {
+    protected function logToDatabase(Request $request, $response) {
 
-        $logLevel = config('logging.mongo_log_level', 'info');
-        if ($logLevel === 'info') {
-            $this->logRequest($request);
-            $this->logResponse($response);
-        }
-
-        if ($logLevel === 'error' && $response->getStatusCode() >=400) {
-            $this->logResponse($response);
-        }
-    }
-
-    protected function logRequest(Request $request) {
-        $this->collection->insertOne([
-            'type' => 'request',
+        $logData = [
+            'user_type' => $this->getUserTypeFromResponse($response),
+            'user_id' => $this->getUserIdFromResponse($response),
             'method' => $request->getMethod(),
             'url' => $request->fullUrl(),
             'headers' => $request->headers->all(),
             'body' => $request->all(),
+            'response_status' => $response->getStatusCode(),
+            'response_content' => $response->getContent(),
+            'level' => 'info',
             'ip' => $request->ip(),
-            'level' => 'info',
-        ]);
-
+        ];
+        Log::logToMongoDB($logData);
     }
-    protected function logResponse(Response $response) {
-        $this->collection->insertOne([
-            'type' => 'response',
-            'status' => $response->getStatusCode(),
-            'headers' => $response->headers->all(),
-            'body' => $response->getContent(),
-            'level' => 'info',
-        ]);
+    protected function getUserTypeFromResponse(Response $response)
+    {
+        $content = $response->getContent();
+        $decoded = json_decode($content, true);
+        // dd($decoded);
+        if (isset($decoded['admin']) && isset($decoded['admin']['role'])) {
+            if ($decoded['admin']['role'] === 'admin') {
+                return 'admin';
+            } elseif ($decoded['admin']['role'] === 'subadmin') {
+                return 'subadmin';
+            }
+        } elseif (isset($decoded['user'])) {
+            return 'user';
+        }
+
+        // Fallback if user type is not found
+        return 'guest';
     }
 
-    // protected function logError($error) {
-    //     $this->collection->insertOne([
-    //         'type' => 'error',
-    //         'error' => $error,
-    //         'level' => 'error',
-    //     ]);
-    // }
+    protected function getUserIdFromResponse(Response $response)
+    {
+        $content = $response->getContent();
+        $decoded = json_decode($content, true);
+
+        if (isset($decoded['admin']) && isset($decoded['admin']['id'])) {
+            return $decoded['admin']['id'];
+        } elseif (isset($decoded['user'])) {
+            return $decoded['user']['id'];
+        }
+
+        // Fallback if user ID is not found
+        return null;
+    }
 }
