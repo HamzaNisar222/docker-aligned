@@ -9,15 +9,14 @@ use App\Http\Resources\RequestServiceCollection;
 
 class VendorServiceController extends Controller
 {
-    public function pending() {
-        $registrations = VendorServiceRegistration::pending();
+
+    public function pending(Request $request) {
+        $registrations = VendorServiceRegistration::pending($request->all());
         return new RequestServiceCollection($registrations);
-        // return Response::success($registrations, "Successfully Retrived Pending Request", 201);
     }
 
-    public function approved() {
-        $registrations = VendorServiceRegistration::approved();
+    public function approved(Request $request) {
+        $registrations = VendorServiceRegistration::approved($request->all());
         return new RequestServiceCollection($registrations);
-        // return Response::success($registrations, "Successfully Retrived Approved Request", 201);
     }
 }

@@ -91,4 +91,38 @@ class User extends Authenticatable
 
         return $user;
     }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully'], 200);
+    }
+
+    public function activateUser($id)
+    {
+        $user = User::findOrFail($id);
+        if ($user->status == true) {
+            return Response::error('User already activated', 401);
+        }
+        $user->status = true;
+        $user->save();
+
+        return response()->json(['message' => 'User activated successfully'], 200);
+    }
+
+    public function deactivateUser($id)
+    {
+        $user = User::findOrFail($id);
+        if ($user->status == true) {
+            $user->status = false;
+            $user->save();
+            return response()->json(['message' => 'User deactivated successfully'], 200);
+        }
+        return Response::error('user already deactivated', 401);
+
+
+    }
+
 }

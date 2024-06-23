@@ -11,4 +11,7 @@ Route::middleware(['auth.token', 'role:user'])->group(function () {
 
     Route::get('/service-registrations/pending', [VendorServiceController::class, 'pending']);
     Route::get('/service-registrations/approved', [VendorServiceController::class, 'approved']);
+
+    // provide services
+    
 });

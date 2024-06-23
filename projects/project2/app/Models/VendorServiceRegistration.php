@@ -45,12 +45,12 @@ class VendorServiceRegistration extends Model
         ]);
     }
 
-    public static function pending() {
-        return self::where('status', 'pending')->get();
+    public static function pending($request) {
+        return self::where('status', 'pending')->where('vendor_id',$request->user->id)->get();
     }
 
-    public static function approved() {
-        return self::where('status', 'approved')->get();
+    public static function approved($request) {
+        return self::where('status', 'approved')->where('vendor_id',$request->user->id)->get();
     }
 
 

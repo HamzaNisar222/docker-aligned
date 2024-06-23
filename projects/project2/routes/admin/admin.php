@@ -18,7 +18,7 @@ Route::middleware(['auth.token', 'role:admin'])->prefix('admin')->group(function
     Route::post('/unarchive-subadmin/{id}', [AdminController::class, 'unarchiveSubAdmin']);
     Route::post('/activate-subadmin/{id}', [AdminController::class, 'activateSubAdmin']);
     Route::post('/deactivate-subadmin/{id}', [AdminController::class, 'deactivateSubAdmin']);
-    Route::post('/assign-permissions/{id}', [AdminController::class, 'assignPermissions']);
+    Route::post('/assign-permissions/{id}', [AdminController::class, 'assignPermissions'])->middleware('validation:permission');
 
     // Manage users
     Route::post('/create-user', [AuthController::class, 'register'])->middleware('validation:register');
