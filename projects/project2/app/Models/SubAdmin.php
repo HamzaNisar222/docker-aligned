@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 

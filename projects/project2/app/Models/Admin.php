@@ -55,7 +55,29 @@ class Admin extends Model
 
         return $admin;
     }
-
-    
-
+// Activate a user account
+    public static function activateUser($id) {
+        // Find a user
+        $user = User::findOrFail($id);
+        if ($user->status == true) {
+            return response()->json(['error' => 'User already activated'], 401);
+        }
+        // Update a user status
+        $user->status = true;
+        $user->save();
+        return response()->json(['message' => 'User activated successfully'], 200);
+    }
+    // Deactivate a user account
+    public static function deactivateUser($id)
+    {
+        // Find a user
+        $user = User::findOrFail($id);
+        if ($user->status == true) {
+            // Deactivate a user
+            $user->status = false;
+            $user->save();
+            return response()->json(['message' => 'User deactivated successfully'], 200);
+        }
+        return Response::error('user already deactivated', 401);
+    }
 }
