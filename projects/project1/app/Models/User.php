@@ -67,4 +67,23 @@ class User extends Authenticatable
             'confirmation_token' => Str::random(60),
         ]);
     }
+
+        // Authenticate user
+        public static function authenticate($email, $password)
+        {
+
+            $user = static::where('email', $email)->first();
+            if (!$user) {
+
+                return null; // User not found
+            }
+            if (!$user->status) {
+                return null; // Account not active
+            }
+            if (!Hash::check($password, $user->password)) {
+                return null; // Incorrect password
+            }
+
+            return $user;
+        }
 }
