@@ -10,6 +10,7 @@ use App\Http\Requests\ServiceRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\subadminRequest;
 use App\Http\Requests\SubserviceRequest;
+use App\Http\Requests\ServiceOfferRequest;
 
 class ValidationMiddleware
 {
@@ -41,6 +42,9 @@ class ValidationMiddleware
         }
         if($key=='permission'){
             app(permission::class);
+        }
+        if($key === 'serviceoffer'){
+            app(ServiceOfferRequest::class);
         }
 
         return $next($request);

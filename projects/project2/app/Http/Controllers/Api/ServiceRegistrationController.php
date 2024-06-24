@@ -32,11 +32,10 @@ class ServiceRegistrationController extends Controller
     public function approve($id)
     {
         $registration = VendorServiceRegistration::findOrFail($id);
-
+        // call to function from vendor service registration model
         if (!$registration->approve()) {
-            return response()->json(['message' => 'Service Registration is already approved or rejected'], 400);
+            return response()->json(['message' => 'Service Registration is already approved'], 400);
         }
-
         return response()->json(['message' => 'Service Registration approved successfully'], 200);
     }
 
@@ -49,11 +48,10 @@ class ServiceRegistrationController extends Controller
     public function reject($id)
     {
         $registration = VendorServiceRegistration::findOrFail($id);
-
+        // call to function from vendor service registration model
         if (!$registration->reject()) {
             return response()->json(['message' => 'Service Registration is already approved or rejected'], 400);
         }
-
         return response()->json(['message' => 'Service Registration rejected successfully'], 200);
     }
 }

@@ -60,6 +60,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(VendorServiceRegistration::class);
     }
+
+    public function vendorServiceOfferings()
+    {
+        return $this->hasMany(VendorServiceOffering::class, 'vendor_id');
+    }
+
     public static function createUser($data)
     {
         return self::create([

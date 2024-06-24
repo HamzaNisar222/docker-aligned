@@ -18,8 +18,8 @@ class CheckSubAdminPermissions
         }
 
         // Retrieve and decode permissions JSON
-        $permissions = $user->permissions ? json_decode($user->permissions, true) : [];
-        
+        $permissions = $user->permissions;
+
 
         // Check if the decoded permissions array contains the required permission
 

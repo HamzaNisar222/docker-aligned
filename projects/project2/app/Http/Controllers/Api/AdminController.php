@@ -16,7 +16,7 @@ class AdminController extends Controller
     {
         $data = $request->all();
         //  call add function from admin model
-        $subAdmin = Admin::addSubadmin($data);
+        $subAdmin = SubAdmin::addSubadmin($data);
         return response()->json(['message' => 'Subadmin created successfully', 'subadmin' => $subAdmin], 201);
     }
 

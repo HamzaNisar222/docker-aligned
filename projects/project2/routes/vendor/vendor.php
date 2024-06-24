@@ -12,6 +12,17 @@ Route::middleware(['auth.token', 'role:user'])->group(function () {
     Route::get('/service-registrations/pending', [VendorServiceController::class, 'pending']);
     Route::get('/service-registrations/approved', [VendorServiceController::class, 'approved']);
 
-    // provide services
-    
+    //OFFERS crud
+    Route::post('/add/service-offer', [VendorServiceController::class, 'addServiceOffer'])->middleware('validation:serviceoffer');
+    Route::put('/service-offers/{id}', [VendorServiceController::class, 'updateServiceOffer']);
+    Route::delete('/service-offer/{id}', [VendorServiceController::class, 'deleteServiceOffer']);
+    // get Vendor services
+    Route::get('/vendor-offerings', [VendorServiceController::class, 'getVendorOfferings']);
+
+
+
 });
+
+Route::get('/available-services', [VendorServiceController::class, 'getAvailableServices']);
+Route::get('/vendor-offerings/{vendorId}', [VendorServiceController::class, 'getVendorSpecificOfferings']);
+
