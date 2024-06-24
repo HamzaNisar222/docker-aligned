@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 
+
 class ValidationMiddleware
 {
     /**
@@ -19,12 +20,10 @@ class ValidationMiddleware
     public function handle(Request $request, Closure $next, $key)
     {
         if ($key === 'register') {
-            // dd($request->all());
             app(RegisterRequest::class);
         }
-        if($key === 'login'){
-            app(LoginRequest::class);
-        }
+
+
 
         return $next($request);
     }

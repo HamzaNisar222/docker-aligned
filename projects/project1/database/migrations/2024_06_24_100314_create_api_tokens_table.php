@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('subservices', function (Blueprint $table) {
+        Schema::create('api_tokens', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_id')->contrained()->onDelete('cascade');
-            $table->string('name');
-            $table->text('description')->nullable();
+            $table->morphs('tokenable'); // This will create tokenable_id and tokenable_type columns
+            $table->string('token', 80)->unique();
+            $table->string('ip_address')->nullable();
+            $table->timestamp('expires_at');
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('subservices');
+        Schema::dropIfExists('api_tokens');
     }
 };

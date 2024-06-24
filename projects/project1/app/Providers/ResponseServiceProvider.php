@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Response;
 
-class CustomResponseServiceProvider extends ServiceProvider
+class ResponseServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -37,13 +37,6 @@ class CustomResponseServiceProvider extends ServiceProvider
                 'success' => false,
                 'message' => $message
             ], $statusCode);
-        });
-
-        Response::macro('apiResponse', function ($apiToken, $user) {
-            return response()->json([
-                'token' => $apiToken->token,
-                'user' => $user
-            ]);
         });
     }
 }

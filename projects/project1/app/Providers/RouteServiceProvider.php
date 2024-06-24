@@ -49,31 +49,4 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
     }
-
-
-    /**
-     * Configure the response service.
-     *
-     * @return void
-     */
-    protected function configureResponseService()
-    {
-        // Define macros for handling errors and exceptions
-        Response::macro('error', function ($message, $status = 400) {
-            return Response::json(['error' => $message], $status);
-        });
-
-        Response::macro('exception', function (\Exception $exception, $status = 500) {
-            // Log the exception if needed
-            // Log::error($exception);
-
-            // Return a JSON response with error message and status code
-            return Response::json(['error' => $exception->getMessage()], $status);
-        });
-
-        // Define macro for rendering views with data
-        Response::macro('viewWithData', function ($view, $data = [], $status = 200, array $headers = []) {
-            return Response::make(View::make($view, $data), $status, $headers);
-        });
-    }
 }

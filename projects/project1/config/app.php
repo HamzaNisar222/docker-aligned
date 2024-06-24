@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
-use App\Providers\RouteServiceProvider;
+use App\Providers\ResponseServiceProvider;
 
 return [
 
@@ -182,7 +182,6 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        App\providers\CustomResponseServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -196,6 +195,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\ResponseServiceProvider::class,
 
     ],
 
