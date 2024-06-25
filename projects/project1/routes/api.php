@@ -25,9 +25,9 @@ Route::get('/register/confirm/{token}', [AuthController::class, 'confirmEmail'])
 Route::post('/login', [AuthController::class, 'login'])->middleware('validation:login');
 Route::post('/logout', [AuthController::class, 'logout']);
 
-Route::middleware('auth.token')->group(function () {
-    Route::get('/vendor/offers', [VendorController::class, 'getVendorOffers']);
-    Route::post('/vendor/offers/{offerId}/request', [VendorController::class, 'requestOfferAvailability']);
-});
+// Route::middleware('auth.token')->group(function () {
+//     Route::get('/vendor/offers', [VendorController::class, 'getVendorOffers']);
+//     Route::post('/vendor/offers/{offerId}/request', [VendorController::class, 'requestOfferAvailability']);
+// });
 Route::get('/available-services', [VendorController::class, 'getAvailableServices']);
 Route::get('/vendor-offerings/{vendorId}', [VendorController::class, 'getVendorSpecificOfferings']);

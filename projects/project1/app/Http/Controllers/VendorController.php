@@ -15,23 +15,9 @@ class VendorController extends Controller
         $this->httpClient = $httpClient;
     }
 
-    public function getVendorOfferings()
-    {
-        $url = env('PROJECT2_API_URL') . '/api/vendor-offerings';
-        $headers = ['Authorization' => 'Bearer ' . auth()->user()->api_token];
-
-        $response = $this->httpClient->sendGetRequest($url, $headers);
-
-        if (isset($response['error'])) {
-            return response()->json(['error' => 'Unable to fetch vendor offerings'], 500);
-        }
-
-        return response()->json($response);
-    }
-
     public function getAvailableServices()
     {
-        $url = 'http://localhost:8082/api/available-services'; // Replace with appropriate URL
+        $url = env('API_BASE_URL') . '/available-services';
         $response = $this->httpClient->sendGetRequest($url);
 
         if (isset($response['error'])) {
@@ -43,7 +29,7 @@ class VendorController extends Controller
 
     public function getVendorSpecificOfferings($vendorId)
     {
-        $url = env('PROJECT2_API_URL') . "/api/vendor-offerings/{$vendorId}";
+        $url = env('API_BASE_URL') . "/vendor-offerings/{$vendorId}";
         $response = $this->httpClient->sendGetRequest($url);
 
         if (isset($response['error'])) {
@@ -53,47 +39,5 @@ class VendorController extends Controller
         return response()->json($response);
     }
 
-    public function addServiceOffer(Request $request)
-    {
-        $url = env('PROJECT2_API_URL') . '/api/add/service-offer';
-        $headers = ['Authorization' => 'Bearer ' . auth()->user()->api_token];
-        $body = $request->all();
 
-        $response = $this->httpClient->sendPostRequest($url, $headers, $body);
-
-        if (isset($response['error'])) {
-            return response()->json(['error' => 'Unable to add service offer'], 500);
-        }
-
-        return response()->json($response);
-    }
-
-    public function updateServiceOffer(Request $request, $id)
-    {
-        $url = env('PROJECT2_API_URL') . "/api/service-offers/{$id}";
-        $headers = ['Authorization' => 'Bearer ' . auth()->user()->api_token];
-        $body = $request->all();
-
-        $response = $this->httpClient->sendPostRequest($url, $headers, $body);
-
-        if (isset($response['error'])) {
-            return response()->json(['error' => 'Unable to update service offer'], 500);
-        }
-
-        return response()->json($response);
-    }
-
-    public function deleteServiceOffer($id)
-    {
-        $url = env('PROJECT2_API_URL') . "/api/service-offer/{$id}";
-        $headers = ['Authorization' => 'Bearer ' . auth()->user()->api_token];
-
-        $response = $this->httpClient->sendPostRequest($url, $headers);
-
-        if (isset($response['error'])) {
-            return response()->json(['error' => 'Unable to delete service offer'], 500);
-        }
-
-        return response()->json($response);
-    }
 }

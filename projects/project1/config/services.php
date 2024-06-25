@@ -30,5 +30,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'api' => [
+           'base_url'=> env('API_BASE_URL','http://localhost:82/api'),
+
+    ],
 
 ];
