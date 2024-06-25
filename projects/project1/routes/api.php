@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\api\ClientServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +32,8 @@ Route::post('/logout', [AuthController::class, 'logout']);
 // });
 Route::get('/available-services', [VendorController::class, 'getAvailableServices']);
 Route::get('/vendor-offerings/{vendorId}', [VendorController::class, 'getVendorSpecificOfferings']);
+
+
+Route::middleware('auth.token')->group(function() {
+    Route::post('/client/service', [ClientServiceController::class, 'store'])->middleware('validation:client');;
+});

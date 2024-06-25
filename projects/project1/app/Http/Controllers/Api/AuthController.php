@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Carbon\Carbon;
-use App\Models\User;
+use App\Models\Client;
 use App\Models\ApiToken;
 use Illuminate\Http\Request;
 use App\Jobs\SendConfirmationEmail;
@@ -16,7 +16,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         // Create user record
-        $user = User::createUser($request->all());
+        $user = Client::createUser($request->all());
         // Generate signed URL for email confirmation
         $confirmationUrl = URL::temporarySignedRoute('register.confirm', Carbon::now()->addMinutes(1), ['token' => $user->confirmation_token]);
         dispatch(new SendConfirmationEmail($user, $confirmationUrl));
@@ -31,7 +31,7 @@ class AuthController extends Controller
             return Response::error('Invalid or expired token.', 401);
         }
         // Find the user by confirmation token
-        $user = User::where('confirmation_token', $token)->first();
+        $user = Client::where('confirmation_token', $token)->first();
 
         // Activate the user
         $user->status = 1; // Active
@@ -44,7 +44,7 @@ class AuthController extends Controller
     // Client Login
     public function login(Request $request)
     {
-        $user = User::authenticate($request->email, $request->password);
+        $user = Client::authenticate($request->email, $request->password);
         // dd($request->user);
         if (!$user) {
             return response()->json(['error' => 'Invalid credentials'], 401);

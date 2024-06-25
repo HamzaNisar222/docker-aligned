@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ClientRegisterRequest;
 
 
 class ValidationMiddleware
@@ -22,9 +23,9 @@ class ValidationMiddleware
         if ($key === 'register') {
             app(RegisterRequest::class);
         }
-
-
-
+        if ($key === 'client') {
+            app(ClientRegisterRequest::class);
+        }
         return $next($request);
     }
 }

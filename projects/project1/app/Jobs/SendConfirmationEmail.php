@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
-use App\Mail\ConfirmationEmail;
+use App\Models\Client;
 use Illuminate\Bus\Queueable;
+use App\Mail\ConfirmationEmail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 
 
 class SendConfirmationEmail implements ShouldQueue
@@ -19,7 +19,7 @@ class SendConfirmationEmail implements ShouldQueue
     protected $user;
     protected $confirmationUrl;
 
-    public function __construct(User $user, $confirmationUrl)
+    public function __construct(Client $user, $confirmationUrl)
     {
         $this->user = $user;
         $this->confirmationUrl = $confirmationUrl;
