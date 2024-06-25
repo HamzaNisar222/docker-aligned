@@ -54,6 +54,8 @@ class User extends Authenticatable
         return $this->morphMany(ApiToken::class, 'tokenable');
     }
 
+    protected $table = 'clients';
+
     public static function createUser($data)
     {
         return self::create([

@@ -13,17 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('admins', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['user', 'admin'])->default('user');
-            $table->boolean('status')->default(0);
-            $table->string('phone_number')->nullable();
-            $table->text('address')->nullable();
-            $table->string('confirmation_token')->nullable();
+            $table->enum('role', ['admin', 'subadmin'])->default('subadmin');
+            $table->json('permissions')->nullable(); // Nullable for subadmins
+            $table->boolean('status')->default(true); // Active by default
             $table->timestamp('email_verified_at')->nullable();
+            $table->softDeletes(); // Add soft deletes
             $table->rememberToken();
             $table->timestamps();
         });
@@ -36,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('admins');
     }
 };
