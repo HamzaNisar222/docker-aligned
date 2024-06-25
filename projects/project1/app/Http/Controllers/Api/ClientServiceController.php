@@ -8,10 +8,22 @@ use App\Http\Controllers\Controller;
 
 class ClientServiceController extends Controller
 {
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
+        
+        $exist = ClientRequest::requestExists($request);
+        if (!$exist) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Request already exists"
+            ]);
+        }
+        // Call to function from Clientrequest Model
         $clientService = ClientRequest::createService($request);
         return response()->json([
-            'message' => 'Successfully Register the Service wait for vendor Approvel'
+            "status"=> "success",
+            'message' => 'Successfully Register the Service wait for vendor Approvel',
+            'Request'=> $clientService,
         ]);
     }
 }

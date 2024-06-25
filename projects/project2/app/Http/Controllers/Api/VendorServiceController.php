@@ -27,6 +27,10 @@ class VendorServiceController extends Controller
     //  Add vendor service offering
     public function addServiceOffer(Request $request)
     {
+        $offer=VendorServiceOffering::isApproved($request);
+        if ($offer instanceof \Illuminate\Http\JsonResponse) {
+            return $offer;
+        }
         // Call to function from VendorServiceOffering
         $offering = VendorServiceOffering::createOffer($request);
         return response()->json(['message' => 'Subservice offering added successfully', 'offering' => $offering], 201);

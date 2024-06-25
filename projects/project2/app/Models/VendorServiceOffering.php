@@ -36,6 +36,27 @@ class VendorServiceOffering extends Model
         return $offering;
     }
 
+   // Verify Approval
+   public static function isApproved($request){
+            // Find the subservice
+            $subservice = Subservice::find($request->subservice_id);
+            if(!$subservice){
+                return response()->json(['error' => 'subservice not found'], 403);
+
+            }
+
+            // Check if the vendor has approval for the main service of the subservice
+            $mainServiceId = $subservice->service_id;
+            $vendorServiceRegistration = VendorServiceRegistration::where('vendor_id', $request->user->id)
+                                                                  ->where('service_id', $mainServiceId)
+                                                                  ->where('status', 'approved')
+                                                                  ->first();
+
+            if (!$vendorServiceRegistration) {
+                return response()->json(['error' => 'Vendor is not approved for the main service of this subservice'], 403);
+            }
+   }
+
     // Update Offer used in vendor service controller
     public static function updateOffer($request,$id){
         // Find offer
