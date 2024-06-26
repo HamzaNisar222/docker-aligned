@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\api;
 
 
+use App\Models\Service;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
 use App\Models\VendorServiceRegistration;
@@ -15,6 +16,7 @@ class ServiceRegistrationController extends Controller
     }
 
     public function create(VendorServiceRequest $request) {
+        Service::find($request->service_id);
         $existedRegistration = VendorServiceRegistration::existedRegistration($request);
         if ($existedRegistration) {
             return Response::error('Service Registration already exists either Pending or Approved', 409);

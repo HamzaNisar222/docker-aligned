@@ -26,7 +26,6 @@ class ClientServiceRequestMail implements ShouldQueue
     public function __construct(ClientRequest $clientService)
     {
         $this->clientService = $clientService;
-
     }
 
     /**

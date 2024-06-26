@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\api\ClientServiceController;
+use App\Http\Controllers\api\StripePaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,9 @@ Route::get('/vendor-offerings/{vendorId}', [VendorController::class, 'getVendorS
 
 Route::middleware('auth.token')->group(function() {
     Route::post('/client/service', [ClientServiceController::class, 'store'])->middleware('validation:client')->name('clent.service');
+    Route::get('client/service/pending', [ClientServiceController::class, 'pending']);
+    Route::get('client/service/approved', [ClientServiceController::class, 'approved']);
+    Route::post('/stripe', [StripePaymentController::class, 'stripePost']);
 });
 
 Route::get('/client/{id}', [ClientServiceController::class, 'finds']);
