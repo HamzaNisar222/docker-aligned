@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('client_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('vendor_service_offering_id')->constrained('vendor_service_offerings')->onDelete('cascade');
             $table->string('status')->default('pending'); // Status of the request, e.g., pending, approved, rejected
             $table->text('details')->nullable(); // Any additional details about the request
