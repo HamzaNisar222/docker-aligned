@@ -3,14 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\ApiToken;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
+use App\Models\VendorServiceRegistration;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Client extends Authenticatable
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -49,16 +51,20 @@ class Client extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function clientRequest() {
-        return $this->hasMany(ClientRequest::class);
-    }
-
     public function apiTokens()
     {
         return $this->morphMany(ApiToken::class, 'tokenable');
     }
 
-    protected $table = 'clients';
+    public function vendorService()
+    {
+        return $this->hasMany(VendorServiceRegistration::class);
+    }
+
+    public function vendorServiceOfferings()
+    {
+        return $this->hasMany(VendorServiceOffering::class, 'vendor_id');
+    }
 
     public static function createUser($data)
     {
@@ -68,28 +74,33 @@ class Client extends Authenticatable
             'password' => Hash::make($data['password']),
             'phone_number' => $data['phone_number'],
             'address' => $data['address'],
-            'role'=>'client',
             'status' => 0, // Inactive
             'confirmation_token' => Str::random(60),
         ]);
     }
-
-        // Authenticate user
-        public static function authenticate($email, $password)
-        {
-
-            $user = static::where('email', $email)->first();
-            if (!$user) {
-
-                return null; // User not found
-            }
-            if (!$user->status) {
-                return null; // Account not active
-            }
-            if (!Hash::check($password, $user->password)) {
-                return null; // Incorrect password
-            }
-
-            return $user;
+    // Authenticate user
+    public static function authenticate($email, $password)
+    {
+        $user = static::where('email', $email)->first();
+        if (!$user) {
+            return null; // User not found
         }
+        if (!$user->status) {
+            return null; // Account not active
+        }
+        if (!Hash::check($password, $user->password)) {
+            return null; // Incorrect password
+        }
+
+        return $user;
+    }
+
+    public static function deleteUser($id)
+    {
+        $user = self::findOrFail($id);
+        $user->delete();
+        return response()->json(['message' => 'User deleted successfully'], 200);
+    }
+
+
 }
