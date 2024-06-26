@@ -24,10 +24,11 @@ class VendorServiceOffering extends Model
     {
         return $this->belongsTo(Subservice::class);
     }
-    // Create Offer Used in Vendor service controller
+
+    // 1 Create Offer Used in Vendor service controller
     public static function createOffer($request)
     {
-        $offering=static::create([
+        $offering = static::create([
             'vendor_id' => $request->user->id,
             'subservice_id' => $request->subservice_id,
             'price' => $request->price,
@@ -36,29 +37,39 @@ class VendorServiceOffering extends Model
         return $offering;
     }
 
-   // Verify Approval
-   public static function isApproved($request){
-            // Find the subservice
-            $subservice = Subservice::find($request->subservice_id);
-            if(!$subservice){
-                return response()->json(['error' => 'subservice not found'], 403);
+    // 2 Verify Approval
+    public static function isApproved($request)
+    {
+        // Find the subservice
+        $subservice = Subservice::find($request->subservice_id);
+        if ($subservice == null) {
+            return response()->json(['error' => 'Subservice not found'], 403);
+        }
+        // Check if the vendor has approval for the main service of the subservice
+        $mainServiceId = $subservice->service_id;
+        $vendorServiceRegistration = VendorServiceRegistration::where('vendor_id', $request->user->id)
+            ->where('service_id', $mainServiceId)
+            ->where('status', 'approved')
+            ->first();
+        if (!$vendorServiceRegistration) {
+            return response()->json(['error' => 'Vendor is not approved for the main service of this subservice'], 403);
+        }
 
-            }
+        // Check if the vendor offering already exists
+        $existingOffer = static::where('vendor_id', $request->user->id)
+            ->where('subservice_id', $request->subservice_id)
+            ->first();
 
-            // Check if the vendor has approval for the main service of the subservice
-            $mainServiceId = $subservice->service_id;
-            $vendorServiceRegistration = VendorServiceRegistration::where('vendor_id', $request->user->id)
-                                                                  ->where('service_id', $mainServiceId)
-                                                                  ->where('status', 'approved')
-                                                                  ->first();
+        if ($existingOffer) {
+            return response()->json(['error' => 'Vendor offer for this subservice already exists'], 409);
+        }
 
-            if (!$vendorServiceRegistration) {
-                return response()->json(['error' => 'Vendor is not approved for the main service of this subservice'], 403);
-            }
-   }
+        return true; // Approved and no duplicate offer
+    }
 
-    // Update Offer used in vendor service controller
-    public static function updateOffer($request,$id){
+    // 3 Update Offer used in vendor service controller
+    public static function updateOffer($request, $id)
+    {
         // Find offer
         $offering = static::findOrFail($id);
         // confirm the vendor is the owner of the offer
@@ -71,12 +82,13 @@ class VendorServiceOffering extends Model
         return $offering;
 
     }
-// Delete Offer
-    public static function deleteOffer($request,$id){
+    // 4 Delete Offer
+    public static function deleteOffer($request, $id)
+    {
         // Find offer
-        $offering=static::findOrFail($id);
+        $offering = static::findOrFail($id);
         // Verify vendor is the owner of the offer
-        if ($offering->vendor_id !== $request->user->id){
+        if ($offering->vendor_id !== $request->user->id) {
             return false;
         }
         // Delete Offer
