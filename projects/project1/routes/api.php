@@ -35,5 +35,7 @@ Route::get('/vendor-offerings/{vendorId}', [VendorController::class, 'getVendorS
 
 
 Route::middleware('auth.token')->group(function() {
-    Route::post('/client/service', [ClientServiceController::class, 'store'])->middleware('validation:client');;
+    Route::post('/client/service', [ClientServiceController::class, 'store'])->middleware('validation:client')->name('clent.service');
 });
+
+Route::get('/client/{id}', [ClientServiceController::class, 'finds']);

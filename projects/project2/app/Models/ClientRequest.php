@@ -11,11 +11,7 @@ class ClientRequest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'client_id',
-        'vendor_service_offering_id',
-        'status',
-        'details',
-        'required_at',
+        'client_id', 'vendor_service_offering_id', 'status', 'details', 'required_at',
     ];
 
     public function client()
@@ -28,9 +24,7 @@ class ClientRequest extends Model
         return $this->belongsTo(VendorServiceOffering::class);
     }
 
-    public static function createService($request)
-    {
-
+    public static function createService($request) {
         return self::create([
             'client_id' => $request->user->id,
             'vendor_service_offering_id' => $request->vendor_service_offering_id,
@@ -39,7 +33,6 @@ class ClientRequest extends Model
             'required_at' => $request->required_at,
         ]);
     }
-
     public static function requestExists($request)
     {
         // Check if a request with the same client_id and vendor_service_offering_id already exists
@@ -52,6 +45,5 @@ class ClientRequest extends Model
         }
         return true;
     }
-
 
 }

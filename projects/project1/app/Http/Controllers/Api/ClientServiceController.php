@@ -1,29 +1,35 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Models\ClientRequest;
 use App\Http\Controllers\Controller;
+use App\Models\VendorServiceOffering;
+use App\Jobs\ClientServiceRequestMail;
 
 class ClientServiceController extends Controller
 {
-    public function store(Request $request)
-    {
-        
+    public function store(Request $request) {
         $exist = ClientRequest::requestExists($request);
         if (!$exist) {
             return response()->json([
                 "status" => "error",
-                "message" => "Request already exists"
-            ]);
+                 "message" => "Request already exists"
+            ], 409);
         }
-        // Call to function from Clientrequest Model
-        $clientService = ClientRequest::createService($request);
-        return response()->json([
-            "status"=> "success",
-            'message' => 'Successfully Register the Service wait for vendor Approvel',
-            'Request'=> $clientService,
-        ]);
+            $clientService = ClientRequest::createService($request);
+            $clientService = ClientRequest::find($clientService->id);
+            ClientServiceRequestMail::dispatch($clientService);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Successfully Register the Service wait for vendor Approvel',
+                'request' => $clientService,
+            ], 201);
+        }
+        public function finds($id) {
+            $clientRequest = ClientRequest::find($id);
+            $vendorServiceOffering = $clientRequest->vendorServiceOffering;
+            dd($vendorServiceOffering);
+        }
     }
-}
