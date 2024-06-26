@@ -34,6 +34,6 @@ return new class extends Migration
             $table->dropForeign(['vendor_id']);
             $table->dropForeign(['subservice_id']);
         });
-        Schema::dropIfExists('vendor_subservice_offerings');
+        Schema::dropIfExists('vendor_service_offerings');
     }
 };
