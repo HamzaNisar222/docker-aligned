@@ -27,9 +27,4 @@ class ClientServiceController extends Controller
                 'request' => $clientService,
             ], 201);
         }
-        public function finds($id) {
-            $clientRequest = ClientRequest::find($id);
-            $vendorServiceOffering = $clientRequest->vendorServiceOffering;
-            dd($vendorServiceOffering);
-        }
     }
