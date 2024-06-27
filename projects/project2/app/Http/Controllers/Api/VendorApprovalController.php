@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\RequestApproval;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Models\ClientRequest;
@@ -9,21 +10,17 @@ use App\Http\Controllers\Controller;
 
 class VendorApprovalController extends Controller
 {
+    // Get all vendor clients
     public function getClients(Request $request)
     {
         $vendorId = $request->user->id;
-
-        // Fetch distinct clients who have made requests to this vendor's offerings
-        $clientIds = ClientRequest::whereHas('vendorServiceOffering', function ($query) use ($vendorId) {
-            $query->where('vendor_id', $vendorId);
-        })->distinct('client_id')->pluck('client_id');
-
-          // Step 2: Fetch all clients with the retrieved client_ids
-          $clients = Client::whereIn('id', $clientIds)->get();
-
+        // Fetch client Ids
+        $clientIds = ClientRequest::clients($vendorId);
+        // Step 2: Fetch all clients with the retrieved client_ids
+        $clients = Client::whereIn('id', $clientIds)->get();
         return response()->json($clients);
     }
-
+    // Get all requests
     public function getAllRequests(Request $request)
     {
         $vendorId = $request->user->id;
@@ -35,93 +32,60 @@ class VendorApprovalController extends Controller
 
         return response()->json($requests);
     }
-
+    // Get pending requests
     public function getPendingRequests(Request $request)
     {
         $vendorId = $request->user->id;
-
-        // Fetch pending client requests for this vendor's offerings
-        $pendingRequests = ClientRequest::where('status', 'pending')
-            ->whereHas('vendorServiceOffering', function ($query) use ($vendorId) {
-                $query->where('vendor_id', $vendorId);
-            })
-            ->get();
-
+        // call to function for getting pending requests
+        $pendingRequests = ClientRequest::pending($vendorId);
         return response()->json($pendingRequests);
     }
-
+    // Get approved requests
     public function getApprovedRequests(Request $request)
     {
         $vendorId = $request->user->id;
-
-        // Fetch approved client requests for this vendor's offerings
-        $approvedRequests = ClientRequest::where('status', 'approved')
-            ->whereHas('vendorServiceOffering', function ($query) use ($vendorId) {
-                $query->where('vendor_id', $vendorId);
-            })
-            ->get();
-
+        //    Call to function for getting approved
+        $approvedRequests = ClientRequest::approved($vendorId);
         return response()->json($approvedRequests);
     }
-
+    // Get rejected requests
     public function getRejectedRequests(Request $request)
     {
         $vendorId = $request->user->id;
-
-        // Fetch rejected client requests for this vendor's offerings
-        $rejectedRequests = ClientRequest::where('status', 'rejected')
-            ->whereHas('vendorServiceOffering', function ($query) use ($vendorId) {
-                $query->where('vendor_id', $vendorId);
-            })
-            ->get();
-
+        // Call to function for getting rejected requests
+        $rejectedRequests = ClientRequest::rejected($vendorId);
         return response()->json($rejectedRequests);
     }
-
+    // Approve a Request
     public function approveRequest(Request $request, $id)
     {
         $vendorId = $request->user->id;
+        // call to function for fetching for approval
+        $clientRequest = RequestApproval::fetchForApproval($vendorId, $id);
+        // Check Request
+        $check = RequestApproval::checkRequest($clientRequest);
+        if ($check) {
+            return $check;
+        }
 
-        // Fetch the request to be approved
-        $clientRequest = ClientRequest::where('id', $id)
-            ->whereHas('vendorServiceOffering', function ($query) use ($vendorId) {
-                $query->where('vendor_id', $vendorId);
-            })
-            ->first();
-            if(! $clientRequest) {
-                return response()->json(['error' => 'Request not found or you do not have access to it'], 404);
-            }
-            if ($clientRequest->status === 'approved') {
-                return response()->json(['error' => 'Request is already approved'], 400);
-            }
+        //  send notification
+        RequestApproval::sendapprovalmail($clientRequest);
 
-        // Approve the request
-        $clientRequest->status = 'approved';
-        $clientRequest->save();
 
         return response()->json(['message' => 'Request approved successfully']);
     }
-
+    // Reject a request
     public function disapproveRequest(Request $request, $id)
     {
-        $vendorId = $request->user()->id;
-
-        // Fetch the request to be disapproved
-        $clientRequest = ClientRequest::where('id', $id)
-            ->whereHas('vendorServiceOffering', function ($query) use ($vendorId) {
-                $query->where('vendor_id', $vendorId);
-            })
-            ->first();
-            if(! $clientRequest) {
-                return response()->json(['error'=> 'Request not fount or you dont have access to it'], 404);
-            }
-            if ($clientRequest->status === 'rejected') {
-                return response()->json(['error'=> 'Request already rejcted'], 400);
-            }
-
-        // Disapprove the request
-        $clientRequest->status = 'rejected';
-        $clientRequest->save();
+        $vendorId = $request->user->id;
+        // Fetch Request for rejection
+        $clientRequest = RequestApproval::fetchForRejection($vendorId, $id);
+        $check = RequestApproval::checkRequestRejection($clientRequest);
+        if ($check) {
+            return $check;
+        }
+        // update status and send rejection mail
+        RequestApproval::rejectionMail($clientRequest);
 
         return response()->json(['message' => 'Request disapproved successfully']);
     }

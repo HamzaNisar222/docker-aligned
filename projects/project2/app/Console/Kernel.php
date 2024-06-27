@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Jobs\RemoveExpiredTokens;
+use App\Jobs\SendPendingPaymentReminder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,8 +17,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Schedule job for removing expired tokens
         $schedule->job(new RemoveExpiredTokens)->everyMinute();
+
+        // Schedule job for sending pending payment reminders to clients
+        $schedule->job(new SendPendingPaymentReminder)->everyMinute();
+
     }
 
     /**
