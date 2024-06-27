@@ -19,4 +19,8 @@ class Subservice extends Model
     public function service() {
         return $this->belongsTo(Service::class);
     }
+
+    public function payment() {
+        return $this->hasMany(Payment::class);
+    }
 }

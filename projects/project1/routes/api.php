@@ -39,7 +39,8 @@ Route::middleware('auth.token')->group(function() {
     Route::post('/client/service', [ClientServiceController::class, 'store'])->middleware('validation:client')->name('clent.service');
     Route::get('client/service/pending', [ClientServiceController::class, 'pending']);
     Route::get('client/service/approved', [ClientServiceController::class, 'approved']);
-    Route::post('/stripe', [StripePaymentController::class, 'stripePost']);
+    Route::post('/create/payment/intent', [StripePaymentController::class, 'createPaymentIntent']);
+    Route::post('/handle/payment/success', [StripePaymentController::class, 'handlePaymentSuccess']);
 });
 
 Route::get('/client/{id}', [ClientServiceController::class, 'finds']);

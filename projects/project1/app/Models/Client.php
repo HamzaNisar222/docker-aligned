@@ -53,6 +53,10 @@ class Client extends Authenticatable
         return $this->hasMany(ClientRequest::class);
     }
 
+    public function payment() {
+        return $this->hasMany(Payment::class);
+    }
+
     public function apiTokens()
     {
         return $this->morphMany(ApiToken::class, 'tokenable');
