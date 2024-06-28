@@ -18,7 +18,8 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('vendor_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
-            $table->foreignId('subservice_id')->constrained('services')->onDelete('cascade');
+            $table->foreignId('subservice_id')->constrained('subservices')->onDelete('cascade');
+            $table->foreignId('client_request_id')->constrained('client_requests')->onDelete('cascade');
             $table->decimal('amount', 8, 2);
             $table->enum('payment_status', ['pending', 'completed', 'failed'])->default('pending');
             $table->timestamps();

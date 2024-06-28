@@ -11,44 +11,36 @@ use Illuminate\Http\Request;
 use App\Models\ClientRequest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Services\StripeService;
 
 class StripePaymentController extends Controller
 {
+    protected $stripeService;
+    public function __construct(StripeService $stripeService) {
+        $this->stripeService = $stripeService;
+    }
+
+
     public function createPaymentIntent(Request $request) {
         $request->validate([
             'client_request_id' => 'required|exists:client_requests,id',
         ]);
+        // finding the request from CilentRequst::Model
         $clientRequest = ClientRequest::find($request->client_request_id);
-        $vendorServiceOffering = $clientRequest->vendorServiceOffering;
-        // Create a payment record in the database
-        $payment = Payment::create([
-            'client_id' => $clientRequest->client_id,
-            'vendor_id' => $vendorServiceOffering->vendor_id,
-            'service_id' => $vendorServiceOffering->subservice->service_id, // Assuming subservice belongs to a service
-            'subservice_id' => $vendorServiceOffering->subservice_id,
-            'amount' => $vendorServiceOffering->price,
-            'payment_status' => 'pending',
-        ]);
-
-        Stripe::setApiKey(config('services.stripe.secret'));
-        // Create a payment intent
-        $paymentIntent = PaymentIntent::create([
-            'amount' => $vendorServiceOffering->price * 100, // amount in cents
-            'currency' => 'usd',
-            'customer' => 'cus_QMzUhvsVwUMyQk',
-            'payment_method' => $request->payment_method,
-            'payment_method_types' => ['card'],
-            'metadata' => [
-                'payment_id' => $payment->id,
-            ],
-        ]);
-
-        return response()->json([
-            'client_secret' => $paymentIntent->client_secret,
-            'payment_intent_id' => $paymentIntent->id,
-            'vendor_id' => $vendorServiceOffering->vendor_id, // Added vendor ID to track the vendor
-            'amount' => $vendorServiceOffering->price,
-        ]);
+        // Checking the status of the clientRequest in table
+        $check = ClientRequest::checkClientRequest($clientRequest);
+        if ($check) {
+            return $check;
+        }
+        //this check if the request have approved status and payemnt_staus false then proceed with payment
+        if ($clientRequest->status == 'approved' && $clientRequest->payment_status === false) {
+            $vendorServiceOffering = $clientRequest->vendorServiceOffering;
+            // Create a payment record in the database
+            $payment = Payment::createPayment($vendorServiceOffering, $clientRequest);
+            // Create a payment intent
+            $paymentIntent = $this->stripeService->createPaymentIntent($request, $vendorServiceOffering, $payment);
+            return $paymentIntent;
+        }
 
     }
 
@@ -62,30 +54,33 @@ class StripePaymentController extends Controller
 
         $paymentId = $request->payment_id;
         $stripePaymentIntentId = $request->payment_intent_id;
-        $paymentMethodId = $request->payment_method;
 
         try {
             // Verify the payment status with Stripe using PaymentIntent ID
             Stripe::setApiKey(config('services.stripe.secret'));
             $paymentIntent = PaymentIntent::retrieve($stripePaymentIntentId);
-            $confirmedPaymentIntent = $paymentIntent->confirm([
-                'payment_method' => $paymentMethodId,
-            ]);
-            // dd($paymentIntent);
+            if ($paymentIntent->status === 'requires_confirmation') {
+                $paymentIntent->confirm();
+            }
             // Check if the payment was successful
             if ($paymentIntent->status !== 'succeeded') {
                 return response()->json(['error' => 'Payment not successful'], 400);
             }
 
             // Use DB transaction to ensure atomic operations
-            DB::transaction(function () use ($paymentId, $confirmedPaymentIntent) {
+            DB::transaction(function () use ($paymentId) {
                 $payment = Payment::find($paymentId);
 
                 if ($payment) {
                     // Update payment status to 'completed'
                     $payment->payment_status = 'completed';
                     $payment->save();
-                    dd($payment);
+
+                    $clientRequest = $payment->clientRequest;
+                    if ($clientRequest) {
+                        $clientRequest->payment_status = 'true';
+                        $clientRequest->save();
+                    }
                     // Create receipt
                     $receipt = new Receipt();
                     $receipt->payment_id = $payment->id;
