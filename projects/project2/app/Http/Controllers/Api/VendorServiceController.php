@@ -41,7 +41,7 @@ class VendorServiceController extends Controller
     {
         // Call to function in vendor service offering
         $offering = VendorServiceOffering::updateOffer($request, $id);
-        
+
         if ($offering) {
             return Response::success('Offer Updated Successfully');
         }

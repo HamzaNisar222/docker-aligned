@@ -66,6 +66,10 @@ class User extends Authenticatable
         return $this->hasMany(VendorServiceOffering::class, 'vendor_id');
     }
 
+    public function payment() {
+        return $this->hasMany(Payment::class);
+    }
+
     public static function createUser($data)
     {
         return self::create([

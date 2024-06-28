@@ -18,4 +18,8 @@ class Service extends Model
     public function subServices() {
         return $this->hasMany(Subservice::class);
     }
+
+    public function payment() {
+        return $this->hasMany(Payment::class);
+    }
 }

@@ -28,6 +28,11 @@ class ClientRequest extends Model
         return $this->belongsTo(VendorServiceOffering::class);
     }
 
+    public function payment()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public static function createService($request)
     {
 
@@ -53,5 +58,20 @@ class ClientRequest extends Model
         return true;
     }
 
-
+    public static function checkClientRequest($clientRequest)
+    {
+        // this check if the request have pending status
+        if ($clientRequest->status == 'pending') {
+            return response()->json([
+                'error' => 'Wait for the Vendor approvel for the service',
+            ], 401);
+        }
+        //this check if the request have approved status and payemnt_staus true
+        if ($clientRequest->status == 'approved' && $clientRequest->payment_status === true) {
+            return response()->json([
+                'error' => 'You have already Paid for this service',
+            ], 409);
+        }
+        
+    }
 }
