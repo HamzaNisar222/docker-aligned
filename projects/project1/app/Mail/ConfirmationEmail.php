@@ -19,6 +19,7 @@ class ConfirmationEmail extends Mailable
         $this->confirmationUrl = $confirmationUrl;
     }
 
+    // send the details to the view to create the body with neccessary information for confirmation of account.
     public function build()
     {
         return $this->subject('Confirm Your Email')

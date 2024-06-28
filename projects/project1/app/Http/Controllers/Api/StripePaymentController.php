@@ -15,12 +15,13 @@ use App\Services\StripeService;
 
 class StripePaymentController extends Controller
 {
+    // created the custom service class for payment to handle the request
     protected $stripeService;
     public function __construct(StripeService $stripeService) {
         $this->stripeService = $stripeService;
     }
 
-
+    // Creating the paymentIntent from the client informationx
     public function createPaymentIntent(Request $request) {
         $request->validate([
             'client_request_id' => 'required|exists:client_requests,id',
@@ -76,6 +77,7 @@ class StripePaymentController extends Controller
                     $payment->payment_status = 'completed';
                     $payment->save();
 
+                    // changing the payemnt_status in client_reqiuest table after payment is success.
                     $clientRequest = $payment->clientRequest;
                     if ($clientRequest) {
                         $clientRequest->payment_status = 'true';
@@ -94,7 +96,7 @@ class StripePaymentController extends Controller
                     throw new \Exception("Payment not found");
                 }
             });
-
+            // retuern the successful response when payemnt is successeded
             return response()->json(['message' => 'Payment successful and receipt generated']);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

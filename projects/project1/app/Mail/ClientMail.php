@@ -26,6 +26,7 @@ class ClientMail extends Mailable
         $this->clientService = $clientService;
     }
 
+    // send the details to the view to create the body with neccessary information for Client Service Requet.
     public function build() {
         return $this->subject('Service Registration Request')
                     ->view('emails.client-registration'); // Correct view name

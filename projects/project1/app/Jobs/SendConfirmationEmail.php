@@ -27,6 +27,7 @@ class SendConfirmationEmail implements ShouldQueue
 
     public function handle()
     {
+        // send the registration confirm email to the user to confirm the account.
         Mail::to($this->user->email)
             ->send(new ConfirmationEmail($this->confirmationUrl));
     }

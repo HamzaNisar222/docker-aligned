@@ -42,5 +42,3 @@ Route::middleware('auth.token')->group(function() {
     Route::post('/create/payment/intent', [StripePaymentController::class, 'createPaymentIntent']);
     Route::post('/handle/payment/success', [StripePaymentController::class, 'handlePaymentSuccess']);
 });
-
-Route::get('/client/{id}', [ClientServiceController::class, 'finds']);

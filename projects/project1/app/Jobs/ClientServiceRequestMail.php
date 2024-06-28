@@ -35,6 +35,7 @@ class ClientServiceRequestMail implements ShouldQueue
      */
     public function handle()
     {
+        // get the mail from client_request relation with vendor for which servicew the client ask for
         $email=$this->clientService->vendorServiceOffering->vendor->email;
         Mail::to($email)->send(new ClientMail($this->clientService));
     }
