@@ -38,6 +38,7 @@ class Log extends Model
         }
     }
 
+    // save the generated logs to the mongoDB Collection
     public static function logToMongoDB($logData)
     {
         self::initializeMongoDB();

@@ -17,6 +17,7 @@ class VendorController extends Controller
 
     public function getAvailableServices()
     {
+        // This will communicate with our 2nd project to get the route to get all services
         $url = env('API_BASE_URL') . '/available-services';
         $response = $this->httpClient->sendGetRequest($url);
 
@@ -27,6 +28,7 @@ class VendorController extends Controller
         return response()->json($response);
     }
 
+    // This will communicate with our 2nd project to get the route of specific vendor services
     public function getVendorSpecificOfferings($vendorId)
     {
         $url = env('API_BASE_URL') . "/vendor-offerings/{$vendorId}";
@@ -38,6 +40,4 @@ class VendorController extends Controller
 
         return response()->json($response);
     }
-
-
 }

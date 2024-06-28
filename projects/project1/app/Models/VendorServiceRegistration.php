@@ -19,16 +19,19 @@ class VendorServiceRegistration extends Model
         'status',
     ];
 
+    // VendorServiceRegistration model relation to the user which vendor have the registed the service
     public function user()
     {
         return $this->belongsTo(User::class, 'vendor_id');
     }
 
+    // VendorServiceRegistration model relation to the service which service belong to vendor.
     public function service()
     {
         return $this->belongsTo(Service::class);
     }
 
+    // Check if the service registerd by the vendor is not being registerd again.
     public static function existedRegistration($request)
     {
         return self::where('vendor_id', $request->user->id)
@@ -36,6 +39,7 @@ class VendorServiceRegistration extends Model
             ->whereIn('status', ['pending', 'approved'])->exists();
     }
 
+    // vendor send the request for the service registration. with the following data.
     public static function createRegistration($request)
     {
         $documentPath = $request->file('document_path')->store('documents');
@@ -47,16 +51,18 @@ class VendorServiceRegistration extends Model
         ]);
     }
 
+    // vendor Get all his pending service request
     public static function pending($request)
     {
         return self::where('status', 'pending')->where('vendor_id', $request['user']['id'])->get();
     }
 
+    // vendor Get all his approved service request.
     public static function approved($request)
     {
-
         return self::where('status', 'approved')->where('vendor_id', $request['user']['id'])->get();
     }
+
     // Verifiying vendor approval
     public static function isVendorApprovedForService($vendorId, $serviceId)
     {
@@ -74,6 +80,7 @@ class VendorServiceRegistration extends Model
      *
      * @return bool
      */
+    // Admin approving the service of vendor.
     public function approve()
     {
         if ($this->status === 'approved') {
@@ -93,6 +100,7 @@ class VendorServiceRegistration extends Model
      *
      * @return bool
      */
+    // Admin reject the service of vendor.
     public function reject()
     {
         if ($this->status === 'rejected') {

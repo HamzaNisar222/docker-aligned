@@ -20,12 +20,19 @@ class ValidationMiddleware
      */
     public function handle(Request $request, Closure $next, $key)
     {
+        //check if the key is register to check the validation for registration.
         if ($key === 'register') {
             app(RegisterRequest::class);
         }
+        //check if the key is login to login to check the validation for login.
+        if ($key === 'login') {
+            app(LoginRequest::class);
+        }
+        //check if the key is client to check the details and date.
         if ($key === 'client') {
             app(ClientRegisterRequest::class);
         }
+
         return $next($request);
     }
 }

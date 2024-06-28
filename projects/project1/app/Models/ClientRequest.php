@@ -18,21 +18,24 @@ class ClientRequest extends Model
         'required_at',
     ];
 
+    // ClinetRequest model relation with client
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
 
+    // Clinet model relation with vendorServiceoffering to get the user
     public function vendorServiceOffering()
     {
         return $this->belongsTo(VendorServiceOffering::class);
     }
-
+    // Clinet model relation with payment model
     public function payment()
     {
         return $this->hasMany(Payment::class);
     }
 
+    // client send the request for the service to vendor offered services
     public static function createService($request)
     {
 
@@ -72,6 +75,6 @@ class ClientRequest extends Model
                 'error' => 'You have already Paid for this service',
             ], 409);
         }
-        
+
     }
 }

@@ -15,10 +15,12 @@ class Service extends Model
         'description',
     ];
 
+    // Service model relation to the many Subservice model
     public function subServices() {
         return $this->hasMany(Subservice::class);
     }
 
+    // Service model relation to the payment model whuich payment belong to the service
     public function payment() {
         return $this->hasMany(Payment::class);
     }

@@ -32,6 +32,7 @@ class RemoveExpiredTokens implements ShouldQueue
      */
     public function handle()
     {
+        // remove all the expired token form the database
         try {
             ApiToken::where('expires_at', '<', now())->delete();
             echo 'expired token deleted';

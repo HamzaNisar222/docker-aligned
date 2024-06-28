@@ -51,25 +51,30 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // User model relation to the apiToken for which is associated with the user for authentication.
     public function apiTokens()
     {
         return $this->morphMany(ApiToken::class, 'tokenable');
     }
 
+    // User model relation to the vendorService for the specific user service
     public function vendorService()
     {
         return $this->hasMany(VendorServiceRegistration::class);
     }
 
+    // User model relation to the vendorServiceOffers for the specific user which service is approved and offerd by vendor.
     public function vendorServiceOfferings()
     {
         return $this->hasMany(VendorServiceOffering::class, 'vendor_id');
     }
 
+    // User model relation to the payment model all the payment that belong to the specific user.
     public function payment() {
         return $this->hasMany(Payment::class);
     }
 
+    // User is regististration is stored with the following information.
     public static function createUser($data)
     {
         return self::create([
@@ -99,6 +104,7 @@ class User extends Authenticatable
         return $user;
     }
 
+    // admin can archive the specific user by id. which is done in project 2.
     public static function deleteUser($id)
     {
         $user = self::findOrFail($id);

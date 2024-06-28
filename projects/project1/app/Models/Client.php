@@ -49,21 +49,24 @@ class Client extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // Clinet model relation with clientRequest
     public function clientRequest() {
         return $this->hasMany(ClientRequest::class);
     }
-
+    // Clinet model relation with payment Model
     public function payment() {
         return $this->hasMany(Payment::class);
     }
-
+    // Clinet model relation with ApiTokens
     public function apiTokens()
     {
         return $this->morphMany(ApiToken::class, 'tokenable');
     }
 
+
     protected $table = 'clients';
 
+    // create the user and generate the random string for URL.
     public static function createUser($data)
     {
         return self::create([
